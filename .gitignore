@@ -1,0 +1,8 @@
+backend/Dataset/FaceData/processed/*
+backend/Dataset/FaceData/raw/*
+backend/Models/*
+backend/src/__pycache__
+backend/src/align/__pycache__
+
+/.DS_Store
+frontend/fa/node_modules/*
