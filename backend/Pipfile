@@ -18,6 +18,7 @@ gensim = "*"
 python-dotenv = "*"
 keras = "*"
 pillow = "*"
+imutils = "*"
 
 [requires]
 python_version = "3.7"
