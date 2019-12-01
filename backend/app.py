@@ -49,7 +49,7 @@ embedding_size = embeddings.get_shape()[1]
 pnet, rnet, onet = src.align.detect_face.create_mtcnn(sess, "src/align")
 
 app = Flask(__name__)
-cors = CORS(app)
+CORS(app)
 
 
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
@@ -66,18 +66,13 @@ class Teacher(db.Model):
 
 
 @app.route('/')
+@cross_origin()
 def index():
     return "OK!"
 
 
-# @app.route('/sessions', methods=['POST'])
-# @cross_origin()
-# def create():
-#     teacher = Teacher.query.filter_by(email=request.form.get('email'), password=request.form.get('password')).first()
-#
-
-
 @app.route('/attendances', methods=['POST'])
+@cross_origin()
 def upload_img_file():
     if request.method == 'POST':
         # base 64
@@ -120,7 +115,7 @@ def upload_img_file():
                 best_name = class_names[best_class_indices[0]]
                 print("Name: {}, Probability: {}".format(best_name, best_class_probabilities))
 
-                if best_class_probabilities > 0.7:
+                if best_class_probabilities > 0.4:
                     name = class_names[best_class_indices[0]]
                 else:
                     name = "Unknown"
@@ -129,14 +124,15 @@ def upload_img_file():
 
 
 @app.route('/train', methods=['GET'])
+@cross_origin()
 def train_model():
     result = src.align_dataset_mtcnn.main()
     src.classifier.main()
     return json_response(result)
 
 
-@cross_origin()
 @app.route('/upload-images', methods=['POST'])
+@cross_origin()
 def upload_images():
     if request.method == "POST":
         files = request.files.getlist("image")
@@ -146,6 +142,7 @@ def upload_images():
             os.mkdir(folder)
         for file in files:
             file.save(os.path.join(folder, file.filename))
+    return json_response("Upload success %d images" %(len(files)))
 
 
 def json_response(payload, status=200):
