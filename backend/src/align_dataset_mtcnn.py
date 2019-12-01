@@ -126,4 +126,4 @@ def main():
 
     print('Total number of images: %d' % nrof_images_total)
     print('Number of successfully aligned images: %d' % nrof_successfully_aligned)
-    return 'Aligned %d/%d images' % (nrof_successfully_aligned, nrof_images_total)
+    return 'Aligned %d images' % (nrof_successfully_aligned)
