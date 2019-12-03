@@ -52,19 +52,6 @@ app = Flask(__name__)
 CORS(app)
 
 
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root:@localhost/face_attandance'
-
-db = SQLAlchemy(app)
-
-
-class Teacher(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(30))
-    email = db.Column(db.String(30), unique=True)
-    password = db.Column(db.String(30))
-
-
 @app.route('/')
 @cross_origin()
 def index():
