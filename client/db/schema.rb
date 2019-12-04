@@ -10,15 +10,24 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_12_03_131134) do
+ActiveRecord::Schema.define(version: 2019_12_04_142710) do
+
+  create_table "attendances", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci", force: :cascade do |t|
+    t.bigint "lesson_id"
+    t.bigint "student_code"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["lesson_id"], name: "index_attendances_on_lesson_id"
+    t.index ["student_code"], name: "index_attendances_on_student_code"
+  end
 
   create_table "class_students", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.bigint "course_class_id"
-    t.bigint "student_id"
+    t.bigint "student_code"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.index ["course_class_id"], name: "index_class_students_on_course_class_id"
-    t.index ["student_id"], name: "index_class_students_on_student_id"
+    t.index ["student_code"], name: "index_class_students_on_student_code"
   end
 
   create_table "classrooms", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci", force: :cascade do |t|

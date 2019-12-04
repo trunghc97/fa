@@ -4,5 +4,6 @@ Rails.application.routes.draw do
   }
   # For details on the DSL available within this file, see https://guides.rubyonrails.org/routing.html
   resources :course_classes
-  root to: "course_classes#index"
+  resources :lessons
+  root to: "lessons#index"
 end
