@@ -1,24 +1,25 @@
+<h3 class="text-center"><%= @lesson.name %></h3>
+<%= react_component("Attendance", { lesson: @lesson }) %>
+
+<br>
+
 <div class="table-responsive">
   <table class="table">
     <tr>
       <td>STT</td>
       <td>Name</td>
-      <td>Class</td>
       <td>Time</td>
     </tr>
-    <% @lessons.each_with_index do |lesson, index| %>
+    <% @attendances.each_with_index do |attendance, index| %>
       <tr>
         <td>
           <%= index + 1 %>
         </td>
         <td>
-          <%= link_to lesson.name, lesson_path(lesson.id) %>
+          <%= attendance.student.name %>
         </td>
         <td>
-          <%= lesson.course_class.name %>
-        </td>
-        <td>
-          <%= lesson.time_start.to_date %>
+          <%= attendance.created_at.to_date %>
         </td>
       </tr>
     <% end %>
