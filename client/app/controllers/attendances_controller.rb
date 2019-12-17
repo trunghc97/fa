@@ -1,7 +1,7 @@
 class AttendancesController < ApplicationController
   def create
     @lesson = Lesson.find_by id: params[:lesson_id]
-    @lesson.attendances.create! student_code: params[:student_code]
+    @lesson.attendances.create! student_code: params[:lessons][:student_code]
     redirect_to @lesson
   end
 

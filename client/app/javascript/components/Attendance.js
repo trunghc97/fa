@@ -14,6 +14,7 @@ class Attendance extends React.Component {
       openCam: false,
       openModal: false,
       studentCode: null,
+      studentInformation: null,
       videoConstraints: {
         width: 800,
         height: 600,
@@ -34,23 +35,21 @@ class Attendance extends React.Component {
     var form = new FormData();
     form.append('image', this.state.imageSrc);
     axios.post('http://localhost:5000/attendances', form)
-      .then(function (response) {
-        this.openModal(response);
+      .then((res) => {
+        const token = document.getElementsByName('csrf-token')[0].content;
+        axios.get(`http://localhost:3000/students/${res.data}`, {headers: {'X-CSRF-Token': token}
+        }).then((response) => {
+            this.setState({
+              openModal: true,
+              studentInformation: response.data.student.name,
+              studentCode: response.data.student.code
+            })
+        });
       });
   }
 
   openCam = () => {
     this.setState({ openCam: !this.state.openCam })
-  }
-
-  openModal = studentCode => {
-    const token = document.getElementsByName('csrf-token')[0].content;
-    axios.get(`http://localhost:3000/users/${studentCode}`, {headers: {'X-CSRF-Token': token}
-    }).then(function (response) {
-        console.log(response);
-        // TO DO setState studentCode
-        this.setState({ openModal: true })
-    });
   }
 
   handleClose = () => {
@@ -59,11 +58,11 @@ class Attendance extends React.Component {
 
   handleAttendance = () => {
     const token = document.getElementsByName('csrf-token')[0].content;
-    axios.post("http://localhost:3000/lessons",
+    axios.post(`http://localhost:3000/lessons/${this.props.lesson.id}/attendances`,
       {lessons: {student_code: this.state.studentCode, lesson_id: this.props.lesson.id}},
       {headers: {'X-CSRF-Token': token}
     }).then(function (response) {
-        console.log(response);
+        window.location.reload();
     });
   }
 
@@ -108,13 +107,12 @@ class Attendance extends React.Component {
 
         <Modal show={this.state.openModal} onHide={this.handleClose}>
           <Modal.Header closeButton>
-            <Modal.Title>Modal heading</Modal.Title>
+            <Modal.Title>Submit Attendance</Modal.Title>
           </Modal.Header>
-          <Modal.Body>Woohoo, you're reading this text in a modal!</Modal.Body>
+          <Modal.Body>
+            {this.state.studentCode + " - " + this.state.studentInformation}
+          </Modal.Body>
           <Modal.Footer>
-            <Button variant="secondary" onClick={this.handleClose}>
-              Close
-            </Button>
             <Button variant="primary" onClick={this.handleAttendance}>
               Submit
             </Button>
