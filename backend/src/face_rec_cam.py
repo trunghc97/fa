@@ -31,9 +31,9 @@ def main():
     FACTOR = 0.709
     IMAGE_SIZE = 182
     INPUT_IMAGE_SIZE = 160
-    CLASSIFIER_PATH = 'Models/facemodel.pkl'
+    CLASSIFIER_PATH = '../Models/facemodel.pkl'
     VIDEO_PATH = args.path
-    FACENET_MODEL_PATH = 'Models/20180402-114759.pb'
+    FACENET_MODEL_PATH = '../Models/20180402-114759.pb'
 
     # Load The Custom Classifier
     with open(CLASSIFIER_PATH, 'rb') as file:
@@ -57,7 +57,7 @@ def main():
             phase_train_placeholder = tf.get_default_graph().get_tensor_by_name("phase_train:0")
             embedding_size = embeddings.get_shape()[1]
 
-            pnet, rnet, onet = align.detect_face.create_mtcnn(sess, "src/align")
+            pnet, rnet, onet = align.detect_face.create_mtcnn(sess, "align")
 
             people_detected = set()
             person_detected = collections.Counter()
@@ -73,10 +73,7 @@ def main():
 
                 faces_found = bounding_boxes.shape[0]
                 try:
-                    if faces_found > 1:
-                        cv2.putText(frame, "Only one face", (0, 100), cv2.FONT_HERSHEY_COMPLEX_SMALL,
-                                    1, (255, 255, 255), thickness=1, lineType=2)
-                    elif faces_found > 0:
+                    if faces_found > 0:
                         det = bounding_boxes[:, 0:4]
                         bb = np.zeros((faces_found, 4), dtype=np.int32)
                         for i in range(faces_found):
