@@ -63,7 +63,6 @@ def index():
 def upload_img_file():
     if request.method == 'POST':
         # base 64
-        name = "Unknown"
         if 'image' in request.files:
             f = request.files['image'].read()
         else:
@@ -78,6 +77,7 @@ def upload_img_file():
         bounding_boxes, _ = src.align.detect_face.detect_face(frame, MINSIZE, pnet, rnet, onet, THRESHOLD, FACTOR)
 
         faces_found = bounding_boxes.shape[0]
+        name = []
 
         if faces_found > 0:
             det = bounding_boxes[:, 0:4]
@@ -87,25 +87,28 @@ def upload_img_file():
                 bb[i][1] = det[i][1]
                 bb[i][2] = det[i][2]
                 bb[i][3] = det[i][3]
-                cropped = frame
-                # cropped = frame[bb[i][1]:bb[i][3], bb[i][0]:bb[i][2], :]
-                scaled = cv2.resize(cropped, (INPUT_IMAGE_SIZE, INPUT_IMAGE_SIZE),
-                                    interpolation=cv2.INTER_CUBIC)
-                scaled = src.facenet.prewhiten(scaled)
-                scaled_reshape = scaled.reshape(-1, INPUT_IMAGE_SIZE, INPUT_IMAGE_SIZE, 3)
-                feed_dict = {images_placeholder: scaled_reshape, phase_train_placeholder: False}
-                emb_array = sess.run(embeddings, feed_dict=feed_dict)
-                predictions = model.predict_proba(emb_array)
-                best_class_indices = np.argmax(predictions, axis=1)
-                best_class_probabilities = predictions[
-                    np.arange(len(best_class_indices)), best_class_indices]
-                best_name = class_names[best_class_indices[0]]
-                print("Name: {}, Probability: {}".format(best_name, best_class_probabilities))
+                # cropped = frame
+                cropped = frame[bb[i][1]:bb[i][3], bb[i][0]:bb[i][2], :]
+                if cropped.any():
+                    scaled = cv2.resize(cropped, (INPUT_IMAGE_SIZE, INPUT_IMAGE_SIZE),
+                                        interpolation=cv2.INTER_CUBIC)
+                    scaled = src.facenet.prewhiten(scaled)
+                    scaled_reshape = scaled.reshape(-1, INPUT_IMAGE_SIZE, INPUT_IMAGE_SIZE, 3)
+                    feed_dict = {images_placeholder: scaled_reshape, phase_train_placeholder: False}
+                    emb_array = sess.run(embeddings, feed_dict=feed_dict)
+                    predictions = model.predict_proba(emb_array)
+                    best_class_indices = np.argmax(predictions, axis=1)
+                    best_class_probabilities = predictions[
+                        np.arange(len(best_class_indices)), best_class_indices]
+                    best_name = class_names[best_class_indices[0]]
+                    print("Name: {}, Probability: {}".format(best_name, best_class_probabilities))
 
-                if best_class_probabilities > 0.4:
-                    name = class_names[best_class_indices[0]]
-                else:
-                    name = "Unknown"
+                    if best_class_probabilities > 0.4:
+                        # name = class_names[best_class_indices[0]]
+                        name.append(class_names[best_class_indices[0]])
+                    else:
+                        # name = "Unknown"
+                        name.append("Unknown")
 
         return json_response(name)
 

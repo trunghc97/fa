@@ -15,6 +15,8 @@ class Attendance extends React.Component {
       openModal: false,
       studentCode: null,
       studentInformation: null,
+      file: null,
+      imageAttendance: false,
       videoConstraints: {
         width: 800,
         height: 600,
@@ -49,7 +51,17 @@ class Attendance extends React.Component {
   }
 
   openCam = () => {
-    this.setState({ openCam: !this.state.openCam })
+    this.setState({
+      openCam: !this.state.openCam,
+      imageAttendance: false
+    })
+  }
+
+  imageAttendance = () => {
+    this.setState ({
+      openCam: false,
+      imageAttendance: !this.state.imageAttendance
+    })
   }
 
   handleClose = () => {
@@ -66,12 +78,43 @@ class Attendance extends React.Component {
     });
   }
 
+  handleImageChange = e => {
+    e.preventDefault();
+
+    let reader = new FileReader();
+    let file = e.target.files[0];
+
+    reader.onloadend = () => {
+      this.setState({
+        file: file,
+        imagePreviewUrl: reader.result
+      });
+    }
+
+    reader.readAsDataURL(file)
+  }
+
+  handleUpload = e => {
+    e.preventDefault();
+    var form = new FormData();
+    const file = this.state.file
+    form.append("image", file);
+    axios.post('http://localhost:5000/attendances', form,
+      { headers: { "Content-type": "multipart/form-data", 'Access-Control-Allow-Origin': "*" } })
+    .then((response) => {
+      this.setState({
+        studentCode: [...new Set(response.data)].filter(e => e !== 'Unknown'),
+        openModal: true
+      })
+    });
+  }
+
   render() {
     let { imagePreviewUrl } = this.state;
     let $imagePreview = null;
-    let webcam, tool = null;
+    let webcam, tool, form = null;
     if (imagePreviewUrl) {
-      $imagePreview = <img src={imagePreviewUrl} />
+      $imagePreview = <img src={imagePreviewUrl} className="pre-img" />
     }
 
     if(this.state.openCam) {
@@ -87,12 +130,30 @@ class Attendance extends React.Component {
                 <button className="btn btn-primary" onClick={this.capture}>Capture photo</button>
                 <button className="btn btn-success" onClick={this.handleSubmit}>Send Images</button>
               </div>
+    } else if (this.state.imageAttendance) {
+      form = <form onSubmit={(e) => this.handleUpload(e)}>
+              <input className="fileInput"
+                type="file"
+                multiple
+                onChange={(e) => this.handleImageChange(e)} />
+              <button className="submitButton btn btn-danger"
+                type="submit"
+                onClick={e => this.handleUpload(e)}>Upload Image</button>
+            </form>
+    }
+
+    let listItems = null
+    if (this.state.studentCode) {
+      listItems = this.state.studentCode.map((number) =>
+        <li>{number}</li>
+      );
     }
 
     return (
       <div className="previewComponent">
         <div className="row">
-          <button onClick={this.openCam} className="btn btn-primary">Attendance</button>
+          <button onClick={this.openCam} className="btn btn-primary">Camera Attendance</button>
+          <button onClick={this.imageAttendance} className="btn btn-primary">Image Attendance</button>
         </div>
         <div className="row">
           <div className="col-3">
@@ -104,13 +165,14 @@ class Attendance extends React.Component {
         </div>
 
         {tool}
+        {form}
 
         <Modal show={this.state.openModal} onHide={this.handleClose}>
           <Modal.Header closeButton>
             <Modal.Title>Submit Attendance</Modal.Title>
           </Modal.Header>
           <Modal.Body>
-            {this.state.studentCode + " - " + this.state.studentInformation}
+            {listItems}
           </Modal.Body>
           <Modal.Footer>
             <Button variant="primary" onClick={this.handleAttendance}>
