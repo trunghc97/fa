@@ -6,4 +6,9 @@ class LessonsController < ApplicationController
     end
     @lessons.flatten!
   end
+
+  def show
+    @lesson = Lesson.find params[:id]
+    @attendances = @lesson.attendances
+  end
 end
