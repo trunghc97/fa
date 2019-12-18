@@ -1,7 +1,13 @@
 class AttendancesController < ApplicationController
   def create
     @lesson = Lesson.find_by id: params[:lesson_id]
-    @lesson.attendances.create! student_code: params[:lessons][:student_code]
+    if params[:lessons][:student_code]
+      params[:lessons][:student_code].each do |code|
+        @lesson.attendances.create student_code: code
+      end
+    else
+      @lesson.attendances.create student_code: params[:lessons][:student_id]
+    end
     redirect_to @lesson
   end
 

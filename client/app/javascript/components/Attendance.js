@@ -15,6 +15,7 @@ class Attendance extends React.Component {
       openModal: false,
       studentCode: null,
       studentInformation: null,
+      studentID: null,
       file: null,
       imageAttendance: false,
       videoConstraints: {
@@ -38,15 +39,19 @@ class Attendance extends React.Component {
     form.append('image', this.state.imageSrc);
     axios.post('http://localhost:5000/attendances', form)
       .then((res) => {
-        const token = document.getElementsByName('csrf-token')[0].content;
-        axios.get(`http://localhost:3000/students/${res.data}`, {headers: {'X-CSRF-Token': token}
-        }).then((response) => {
-            this.setState({
-              openModal: true,
-              studentInformation: response.data.student.name,
-              studentCode: response.data.student.code
-            })
-        });
+        // const token = document.getElementsByName('csrf-token')[0].content;
+        // axios.get(`http://localhost:3000/students/${res.data}`, {headers: {'X-CSRF-Token': token}
+        // }).then((response) => {
+        //     this.setState({
+        //       openModal: true,
+        //       studentInformation: response.data.student.name,
+        //       studentID: response.data.student.code
+        //     })
+        // });
+        this.setState({
+          studentCode: [...new Set(res.data)].filter(e => e !== 'Unknown'),
+          openModal: true
+        })
       });
   }
 
@@ -71,7 +76,8 @@ class Attendance extends React.Component {
   handleAttendance = () => {
     const token = document.getElementsByName('csrf-token')[0].content;
     axios.post(`http://localhost:3000/lessons/${this.props.lesson.id}/attendances`,
-      {lessons: {student_code: this.state.studentCode, lesson_id: this.props.lesson.id}},
+      {lessons: {student_code: this.state.studentCode, lesson_id: this.props.lesson.id,
+        student_id: this.state.studentID }},
       {headers: {'X-CSRF-Token': token}
     }).then(function (response) {
         window.location.reload();
@@ -147,6 +153,8 @@ class Attendance extends React.Component {
       listItems = this.state.studentCode.map((number) =>
         <li>{number}</li>
       );
+    } else if (this.state.studentID) {
+      listItems = <li>{ this.state.studentID + " - " + this.state.studentInformation }</li>
     }
 
     return (

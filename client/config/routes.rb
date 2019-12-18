@@ -8,5 +8,6 @@ Rails.application.routes.draw do
     resources :attendances, shallow: true
   end
   resources :students, only: :show
+  get "train", to: "trains#index"
   root to: "lessons#index"
 end
