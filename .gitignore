@@ -1,6 +1,9 @@
 backend/Dataset/FaceData/processed/*
 backend/Dataset/FaceData/raw/*
-backend/Models/*
+backend/Models/20180402-114759.pb
+backend/Models/model-20180402-114759.ckpt-275.data-00000-of-00001
+backend/Models/model-20180402-114759.meta
+backend/Models/model-20180402-114759.ckpt-275.index
 backend/src/__pycache__
 backend/src/align/__pycache__
 
