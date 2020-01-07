@@ -2,25 +2,36 @@
 <%= react_component("Attendance", { lesson: @lesson }) %>
 
 <br>
+<%= link_to "Export Excel", course_class_export_excel_path(format: "xls", course_class_id: @lesson.course_class),
+  method: :get, class: "btn btn-primary float-right" %>
 
 <div class="table-responsive">
   <table class="table">
     <tr>
       <td>STT</td>
       <td>Name</td>
+      <td>Attendant</td>
       <td>Time</td>
     </tr>
-    <% @attendances.each_with_index do |attendance, index| %>
+    <% @students.each_with_index do |student, index| %>
       <tr>
         <td>
           <%= index + 1 %>
         </td>
         <td>
-          <%= attendance.student.name %>
+          <%= student[1] %>
         </td>
-        <td>
-          <%= attendance.created_at.to_date %>
-        </td>
+        <% if student[2].present? %>
+          <td>
+            <input type="checkbox" checked disabled="true">
+          </td>
+          <td>
+            <%= student[2] %>
+          </td>
+        <% else %>
+          <td> <input type="checkbox" disabled="true"> </td>
+          <td> - </td>
+        <% end %>
       </tr>
     <% end %>
   </table>

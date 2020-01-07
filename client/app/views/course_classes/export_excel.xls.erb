@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<Workbook xmlns="urn:schemas-microsoft-com:office:spreadsheet"
+  xmlns:o="urn:schemas-microsoft-com:office:office"
+  xmlns:x="urn:schemas-microsoft-com:office:excel"
+  xmlns:ss="urn:schemas-microsoft-com:office:spreadsheet"
+  xmlns:html="http://www.w3.org/TR/REC-html40">
+  <Worksheet ss:Name="Sheet1">
+    <Table>
+      <Row>
+        <Cell><Data ss:Type="String">STT</Data></Cell>
+        <Cell><Data ss:Type="String">Name</Data></Cell>
+        <% @dates.each do |date| %>
+          <Cell><Data ss:Type="String"><%= date %></Data></Cell>
+        <% end %>
+      </Row>
+      <% @students.each_with_index do |student, index| %>
+        <Row>
+          <Cell><Data ss:Type="String"><%= index + 1 %></Data></Cell>
+          <Cell><Data ss:Type="String"><%= student[1] %></Data></Cell>
+          <% @dates.each_with_index do |date, i| %>
+            <Cell><Data ss:Type="String"><%= student[i+2] %></Data></Cell>
+          <% end %>
+        </Row>
+      <% end %>
+    </Table>
+  </Worksheet>
+</Workbook>
