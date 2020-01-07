@@ -18,7 +18,7 @@
           <%= lesson.course_class.name %>
         </td>
         <td>
-          <%= lesson.time_start.to_date %>
+          <%= lesson.time_start.strftime("%d/%m/%Y") %>
         </td>
       </tr>
     <% end %>
